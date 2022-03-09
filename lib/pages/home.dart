@@ -30,18 +30,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void setAdmin() async {
-    var map = DatabaseService.userMap;
-    var user = map[auth.currentUser!.uid];
-    if (map.isNotEmpty && user != null) {
-      setState(() {
-        admin = (user!.type == "ADMIN");
-      });
-    } else {
-      user = await db.getUser(auth.currentUser!.uid);
-      setState(() {
-        admin = (user!.type == "ADMIN");
-      });
-    }
+    var user = await db.getUser(auth.currentUser!.uid);
+    setState(() {
+      admin = (user.type == "ADMIN");
+    });
   }
 
   @override
