@@ -39,52 +39,49 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: [
-        IconButton(
-          onPressed: () {
-            setState(() {
-              loading = true;
-              logout();
-            });
-          },
-          icon: const Icon(Icons.logout),
-        ),
-      ]),
-      body: StreamBuilder<List<Post>>(
-        stream: db.posts,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text("An error has occured!"),
-            );
-          } else {
-            var posts = snapshot.data ?? [];
+        appBar: AppBar(actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                loading = true;
+                logout();
+              });
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ]),
+        body: StreamBuilder<List<Post>>(
+          stream: db.posts,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text("An error has occured!"),
+              );
+            } else {
+              var posts = snapshot.data ?? [];
 
-            return posts.isNotEmpty
-                ? ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                          elevation: 5.0,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(posts[index].message),
-                          ));
-                    })
-                : const Center(
-                    child: Text("No post have been made yet."),
-                  );
-          }
-        },
-      ),
-      floatingActionButton: admin
-          ? FloatingActionButton(
-              onPressed: messagePopUp,
-              tooltip: 'Post Message',
-              child: const Icon(Icons.add),
-            )
-          : null,
-    );
+              return posts.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                            elevation: 5.0,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(posts[index].message),
+                            ));
+                      })
+                  : const Center(
+                      child: Text("No post have been made yet."),
+                    );
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: messagePopUp,
+          tooltip: 'Post Message',
+          child: const Icon(Icons.add),
+        ));
   }
 
   void logout() async {
