@@ -17,8 +17,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignUpPage());
       case Routes.message:
         return MaterialPageRoute(builder: (_) => MessagePage());
-      case Routes.post:
-        return MaterialPageRoute(builder: (_) => PostPage());
       case Routes.profile:
         return MaterialPageRoute(builder: (_) => ProfilePage());
       default:

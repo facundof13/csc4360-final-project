@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Creation Drive',
+        title: 'PostingLister',
         onGenerateRoute: AppRouter.generateRoute,
         home: FutureBuilder<FirebaseApp>(
           future: _initializer,

@@ -1,5 +1,6 @@
 import 'package:fanpage/custom/forms/postform.dart';
 import 'package:fanpage/models/post.dart';
+import 'package:fanpage/pages/post.dart';
 import 'package:fanpage/pages/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -64,12 +65,23 @@ class _HomePageState extends State<HomePage> {
                   ? ListView.builder(
                       itemCount: posts.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                            elevation: 5.0,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text(posts[index].message),
-                            ));
+                        print(posts);
+                        return GestureDetector(
+                            onTap: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PostPage(
+                                              post: posts[index],
+                                            )),
+                                  )
+                                },
+                            child: Card(
+                                elevation: 5.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text(posts[index].message),
+                                )));
                       })
                   : const Center(
                       child: Text("No post have been made yet."),

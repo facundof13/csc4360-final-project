@@ -13,7 +13,9 @@ class Driver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var stream = _auth.idTokenChanges();
-    stream.listen((event) {});
+    stream.listen((event) {
+      print(event);
+    });
     if (_auth.currentUser != null) {
       return const HomePage();
     } else {
