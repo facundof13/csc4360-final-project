@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../services/database_service.dart';
+import 'package:fanpage/pages/profile.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -39,6 +40,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Text()
+
       appBar: AppBar(actions: [
         IconButton(
           onPressed: () {
