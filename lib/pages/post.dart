@@ -11,7 +11,6 @@ class PostPage extends StatelessWidget {
   static const String routeName = '/post';
   @override
   Widget build(BuildContext context) {
-    print(post);
     return Scaffold(
       appBar: AppBar(
         title: Text(post.message),

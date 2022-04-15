@@ -1,5 +1,6 @@
 import 'package:fanpage/custom/forms/postform.dart';
 import 'package:fanpage/models/post.dart';
+import 'package:fanpage/pages/message.dart';
 import 'package:fanpage/pages/post.dart';
 import 'package:fanpage/pages/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,17 +41,27 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                loading = true;
-                logout();
-              });
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ]),
+        appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    loading = true;
+                    logout();
+                  });
+                },
+                icon: const Icon(Icons.logout),
+              ),
+            ],
+            leading: IconButton(
+              icon: const Icon(Icons.message),
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MessagePage()),
+                )
+              },
+            )),
         body: StreamBuilder<List<Post>>(
           stream: db.posts,
           builder: (context, snapshot) {
@@ -65,7 +76,6 @@ class _HomePageState extends State<HomePage> {
                   ? ListView.builder(
                       itemCount: posts.length,
                       itemBuilder: (BuildContext context, int index) {
-                        print(posts);
                         return GestureDetector(
                             onTap: () => {
                                   Navigator.push(

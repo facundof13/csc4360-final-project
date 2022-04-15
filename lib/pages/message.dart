@@ -1,35 +1,64 @@
 import 'package:fanpage/pages/home.dart';
+import 'package:fanpage/pages/select_user.dart';
 import 'package:fanpage/shared.dart';
 import 'package:fanpage/custom/forms/signupform.dart';
 import 'package:flutter/material.dart';
 
-class MessagePage extends StatelessWidget {
+class MessagePage extends StatefulWidget {
   const MessagePage({Key? key}) : super(key: key);
   static const String routeName = '/message';
+
+  @override
+  State<MessagePage> createState() => _MessagePageState();
+}
+
+class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
-    double width = (screenWidth(context) < screenHeight(context) ? 0.95 : 0.5) *
-        screenWidth(context);
     return Scaffold(
-      body: Center(
-        child: SizedBox(
-          width: width,
-          child: Card(
-              elevation: 5.0,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SignUpForm(onTap: () => _successfulSignUp(context)),
-              )),
-        ),
+      appBar: AppBar(
+        title: Text("Messages"),
+        centerTitle: true,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: messagePopUp,
+        tooltip: 'Send Message',
+        child: const Icon(Icons.person_add),
       ),
     );
   }
 
-  static void _successfulSignUp(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-      ModalRoute.withName('/'),
-    );
+  void messagePopUp() {
+    final _formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SelectUserPage(),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        Text(
+                          "Enter a message",
+                        ),
+                        TextFormField(),
+                        Spacer(),
+                        Row(children: [
+                          Expanded(
+                              child: ElevatedButton(
+                                  onPressed: sendMessage,
+                                  child: Text("Send Message")))
+                        ]),
+                      ])));
+        });
+  }
+
+  void sendMessage() async {
+    print('sending user message');
   }
 }
