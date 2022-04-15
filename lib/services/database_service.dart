@@ -70,8 +70,9 @@ class DatabaseService {
     return;
   }
 
-  Future<void> addPost(String uid, String message) async {
+  Future<void> addPost(String uid, String title, String message) async {
     await _firestore.collection("posts").add({
+      'title': title,
       'message': message,
       'type': 0,
       'owner': uid,

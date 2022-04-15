@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Post {
   Post(
       {required this.id,
+      required this.title,
       required this.message,
       required this.type,
       required this.owner,
@@ -11,6 +12,7 @@ class Post {
   factory Post.fromMap(String id, Map<String, dynamic> data) {
     return Post(
       id: id,
+      title: data['title'],
       message: data['message'],
       type: data['type'],
       owner: data['owner'],
@@ -18,6 +20,7 @@ class Post {
     );
   }
   Map<String, dynamic> toJson() => {
+        'title': title,
         'message': message,
         'type': type,
         'owner': owner,
@@ -25,6 +28,7 @@ class Post {
       };
 
   final String id;
+  final String title;
   final String message;
   final int type;
   final String owner;

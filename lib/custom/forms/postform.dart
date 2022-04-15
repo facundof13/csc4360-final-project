@@ -16,6 +16,7 @@ class PostForm extends StatefulWidget {
 class _PostFormState extends State<PostForm> {
   var loading = false;
   var message = TextEditingController();
+  var title = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final DatabaseService db = DatabaseService();
 
@@ -29,14 +30,26 @@ class _PostFormState extends State<PostForm> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               TextField(
+                controller: title,
+                showCursor: true,
+                maxLines: 1,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Post Title',
+                    hintText: 'Title your post here!'),
+              ),
+              verticalSpaceSmall,
+
+              TextField(
                 controller: message,
                 showCursor: true,
                 minLines: 4,
                 maxLines: 10,
+                
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Message to Fans',
-                    hintText: 'Enter the message for your fans to see.'),
+                    labelText: 'Write your post..',
+                    hintText: 'Write your post here!'),
               ),
               verticalSpaceSmall,
               ElevatedButton(
@@ -53,9 +66,10 @@ class _PostFormState extends State<PostForm> {
   }
 
   void postMessage() async {
-    var post = message.text.trim();
-    if (post.isNotEmpty) {
-      await db.addPost(auth.currentUser!.uid, post);
+    var header = title.text.trim();
+    var msg = message.text.trim();
+    if (header.isNotEmpty && msg.isNotEmpty) {
+      await db.addPost(auth.currentUser!.uid, header, msg);
       snackBar(context, "Message successfully added.");
       Navigator.of(context).pop();
     } else {

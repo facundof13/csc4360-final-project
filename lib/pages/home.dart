@@ -19,22 +19,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool loading = false;
-  bool admin = false;
   final DatabaseService db = DatabaseService();
   final FirebaseAuth auth = FirebaseAuth.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    setAdmin();
-  }
-
-  void setAdmin() async {
-    var user = await db.getUser(auth.currentUser!.uid);
-    setState(() {
-      admin = (user.type == "ADMIN");
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +63,11 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      floatingActionButton: admin
-          ? FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
               onPressed: messagePopUp,
-              tooltip: 'Post Message',
+              tooltip: 'Make a new post!',
               child: const Icon(Icons.add),
-            )
-          : null,
+      ),
     );
   }
 
