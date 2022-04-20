@@ -1,105 +1,64 @@
 import 'package:fanpage/models/conversation.dart';
-import 'package:fanpage/models/user.dart';
-import 'package:fanpage/pages/conversation.dart';
-import 'package:fanpage/pages/home.dart';
-import 'package:fanpage/pages/select_user.dart';
+import 'package:fanpage/models/message.dart';
+import 'package:fanpage/pages/chat.dart';
+import 'package:fanpage/pages/send_message.dart';
 import 'package:fanpage/services/database_service.dart';
-import 'package:fanpage/shared.dart';
-import 'package:fanpage/custom/forms/signupform.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class MessagePage extends StatefulWidget {
-  const MessagePage({Key? key}) : super(key: key);
-  static const String routeName = '/message';
+  const MessagePage({required this.conversation, Key? key}) : super(key: key);
+  final Conversation conversation;
 
   @override
   State<MessagePage> createState() => _MessagePageState();
 }
 
 class _MessagePageState extends State<MessagePage> {
-  final messageController = TextEditingController();
-  final DatabaseService db = DatabaseService();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final DatabaseService db = DatabaseService();
+  ScrollController scrollController = ScrollController();
 
-  User? selectedUser;
+  void messageSent() {
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    });
+    scrollController.jumpTo(scrollController.position.maxScrollExtent);
+  }
 
   @override
   Widget build(BuildContext context) {
+    String title = widget.conversation.userInfo
+        .where((user) => user.id != auth.currentUser!.uid)
+        .first
+        .name;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Messages"),
+        title: Text(toBeginningOfSentenceCase(title)!),
         centerTitle: true,
       ),
-      body: StreamBuilder<List<Conversation>>(
-        stream: db.conversations,
+      body: StreamBuilder<List<Message>>(
+        stream: db.messages,
         builder: (context, snapshot) {
-          var conversations = snapshot.data ?? [];
+          var data = snapshot.data ?? [];
+          data.removeWhere(
+              (message) => message.conversationId != widget.conversation.id);
 
-          conversations.removeWhere(
-              (element) => !element.users.contains(auth.currentUser?.uid));
-
-          return ListView.builder(
-              itemCount: conversations.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ConversationPage()),
-                  ),
-                  child: Card(
-                      elevation: 5.0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text("Conversation with " +
-                            conversations[index]
-                                .userInfo
-                                .map((e) => e.name)
-                                .join(', ')),
-                      )),
-                );
-              });
+          return Column(
+            children: <Widget>[
+              Expanded(
+                  child: ChatPage(
+                      messages: data, scrollController: scrollController)),
+              SendMessagePage(
+                  conversationId: widget.conversation.id,
+                  messageSent: messageSent),
+            ],
+          );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: messagePopUp,
-        tooltip: 'Send Message',
-        child: const Icon(Icons.person_add),
-      ),
     );
-  }
-
-  void messagePopUp() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Form(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                    SelectUserPage(callback: (user) => selectedUser = user),
-                    const Padding(padding: EdgeInsets.only(top: 20)),
-                    const Text(
-                      "Enter a message",
-                    ),
-                    TextFormField(
-                      controller: messageController,
-                    ),
-                    const Spacer(),
-                    Row(children: [
-                      Expanded(
-                          child: ElevatedButton(
-                              onPressed: sendMessage,
-                              child: const Text("Send Message")))
-                    ]),
-                  ])));
-        });
-  }
-
-  void sendMessage() async {
-    db.sendMessage(selectedUser!, messageController.value.text);
-    Navigator.pop(context);
   }
 }

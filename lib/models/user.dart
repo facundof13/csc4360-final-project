@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  User(
-      {required this.id,
-      required this.name,
-      required this.type,
-      required this.email,
-      required this.created});
+  User({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.email,
+    required this.created,
+    this.isSelf,
+  });
 
   factory User.fromMap(String id, Map<String, dynamic> data) {
     return User(
@@ -22,6 +24,7 @@ class User {
         'type': type,
         'email': email,
         'created': created,
+        'isSelf': false,
       };
 
   final String id;
@@ -29,4 +32,5 @@ class User {
   final String type;
   final String email;
   final Timestamp created;
+  bool? isSelf = false;
 }

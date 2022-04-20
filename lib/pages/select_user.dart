@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 
 class SelectUserPage extends StatefulWidget {
-  const SelectUserPage({Key? key}) : super(key: key);
+  const SelectUserPage({required this.callback, Key? key}) : super(key: key);
+  final Function callback;
 
   @override
   State<SelectUserPage> createState() => SelectUserPageState();
@@ -26,7 +27,7 @@ class SelectUserPageState extends State<SelectUserPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Select a user",
             ),
             Row(
@@ -43,6 +44,7 @@ class SelectUserPageState extends State<SelectUserPage> {
                   onChanged: (User? user) {
                     setState(() {
                       dropdownValue = user!;
+                      widget.callback(user);
                     });
                   },
                   value: dropdownValue,

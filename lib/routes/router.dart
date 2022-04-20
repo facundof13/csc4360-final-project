@@ -1,6 +1,6 @@
 import 'package:fanpage/driver.dart';
 import 'package:fanpage/pages/home.dart';
-import 'package:fanpage/pages/message.dart';
+import 'package:fanpage/pages/conversation.dart';
 import 'package:fanpage/pages/post.dart';
 import 'package:fanpage/pages/profile.dart';
 import 'package:fanpage/pages/signup.dart';
@@ -15,8 +15,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => Driver());
       case Routes.signup:
         return MaterialPageRoute(builder: (_) => SignUpPage());
-      case Routes.message:
-        return MaterialPageRoute(builder: (_) => MessagePage());
+      case Routes.conversation:
+        return MaterialPageRoute(builder: (_) => ConversationPage());
       case Routes.profile:
         return MaterialPageRoute(builder: (_) => ProfilePage());
       default:
@@ -29,7 +29,7 @@ class Routes {
   static const String home = HomePage.routeName;
   static const String signup = SignUpPage.routeName;
   static const String driver = '/';
-  static const String message = MessagePage.routeName;
+  static const String conversation = ConversationPage.routeName;
   static const String post = PostPage.routeName;
   static const String profile = ProfilePage.routeName;
 }

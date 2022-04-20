@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fanpage/models/conversation.dart';
+import 'package:fanpage/models/message.dart';
 import 'package:fanpage/models/post.dart';
 import 'package:fanpage/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:collection/collection.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -21,6 +23,9 @@ class DatabaseService {
   final StreamController<List<Conversation>> _conversationsController =
       StreamController<List<Conversation>>();
 
+  final StreamController<List<Message>> _messagesController =
+      StreamController<List<Message>>();
+
   DatabaseService() {
     _firestore.collection('users').snapshots().listen(_usersUpdated);
     _firestore.collection('posts').snapshots().listen(_postsUpdated);
@@ -28,12 +33,14 @@ class DatabaseService {
         .collection('conversations')
         .snapshots()
         .listen(_conversationsUpdated);
+    _firestore.collection('messages').snapshots().listen(_messagesUpdated);
   }
 
   Stream<Map<String, User>> get users => _usersController.stream;
   Stream<List<Post>> get posts => _postsController.stream;
   Stream<List<Conversation>> get conversations =>
       _conversationsController.stream;
+  Stream<List<Message>> get messages => _messagesController.stream;
 
   void _usersUpdated(QuerySnapshot<Map<String, dynamic>> snapshot) {
     var users = _getUsersFromSnapshot(snapshot);
@@ -49,6 +56,12 @@ class DatabaseService {
       QuerySnapshot<Map<String, dynamic>> snapshot) async {
     var conversations = await _getConversationsFromSnapshot(snapshot);
     _conversationsController.add(conversations);
+  }
+
+  void _messagesUpdated(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    var messages = _getMessagesFromSnapshot(snapshot);
+    messages.sort((a, b) => a.dateSent.compareTo(b.dateSent));
+    _messagesController.add(messages);
   }
 
   Map<String, User> _getUsersFromSnapshot(
@@ -68,7 +81,11 @@ class DatabaseService {
     for (var element in snapshot.docs) {
       Conversation c = Conversation.fromMap(element.id, element.data());
       for (var uid in c.users) {
-        c.userInfo.add(await getUser(uid));
+        User u = await getUser(uid);
+
+        u.isSelf = uid == _auth.currentUser!.uid;
+
+        c.userInfo.add(u);
       }
 
       conversations.add(c);
@@ -86,6 +103,17 @@ class DatabaseService {
     }
     posts.sort((a, b) => a.created.compareTo(b.created));
     return posts;
+  }
+
+  List<Message> _getMessagesFromSnapshot(
+      QuerySnapshot<Map<String, dynamic>> snapshot) {
+    List<Message> messages = [];
+    for (var element in snapshot.docs) {
+      Message message = Message.fromMap(element.id, element.data());
+      messages.add(message);
+    }
+    // posts.me((a, b) => a.created.compareTo(b.created));
+    return messages;
   }
 
   Future<User> getUser(String uid) async {
@@ -114,10 +142,35 @@ class DatabaseService {
     return;
   }
 
-  Future<void> sendMessage(User selectedUser, String message) async {
-    await _firestore.collection("conversations").add({
-      'users': [selectedUser.id, _auth.currentUser!.uid],
-      "created": DateTime.now()
+  Future<void> createConversation(User selectedUser, String message) async {
+    var users = [selectedUser.id, _auth.currentUser!.uid];
+    users.sort();
+
+    var conversationId = (await _firestore
+            .collection('conversations')
+            .where('users', isEqualTo: users.toList())
+            .get())
+        .docs
+        .firstOrNull
+        ?.id;
+
+    if (conversationId == null) {
+      var docRef = await _firestore
+          .collection("conversations")
+          .add({'users': users, "created": DateTime.now()});
+
+      conversationId = docRef.id;
+    }
+
+    await sendMessage(message, conversationId);
+  }
+
+  Future<void> sendMessage(String message, String conversationId) async {
+    await _firestore.collection("messages").add({
+      'conversationId': conversationId,
+      'dateSent': DateTime.now(),
+      'message': message,
+      'from': _auth.currentUser!.uid,
     });
   }
 }
