@@ -58,7 +58,8 @@ class _HomePageState extends State<HomePage> {
               onPressed: () => {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ConversationPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const ConversationPage()),
                 )
               },
             )),
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
-                child: Text("An error has occured!"),
+                child: Text("An error has occurred!"),
               );
             } else {
               var posts = snapshot.data ?? [];

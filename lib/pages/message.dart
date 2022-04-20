@@ -39,6 +39,12 @@ class _MessagePageState extends State<MessagePage> {
       appBar: AppBar(
         title: Text(toBeginningOfSentenceCase(title)!),
         centerTitle: true,
+        actions: [
+          PopupMenuButton(
+              itemBuilder: (context) => [
+                    PopupMenuItem(value: 0, child: Text("hello")),
+                  ])
+        ],
       ),
       body: StreamBuilder<List<Message>>(
         stream: db.messages,
