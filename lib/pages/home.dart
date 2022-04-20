@@ -63,42 +63,54 @@ class _HomePageState extends State<HomePage> {
                 )
               },
             )),
-        body: StreamBuilder<List<Post>>(
-          stream: db.posts,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text("An error has occurred!"),
-              );
-            } else {
-              var posts = snapshot.data ?? [];
-
-              return posts.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: posts.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return GestureDetector(
-                            onTap: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => PostPage(
-                                              post: posts[index],
-                                            )),
-                                  )
-                                },
-                            child: Card(
-                                elevation: 5.0,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(posts[index].message),
-                                )));
-                      })
-                  : const Center(
-                      child: Text("No post have been made yet."),
+        body: Column(
+          children: [
+            Container(
+                padding: const EdgeInsets.all(10),
+                child: const Text(
+                  "All Posts",
+                  style: TextStyle(fontSize: 20),
+                )),
+            Expanded(
+              child: StreamBuilder<List<Post>>(
+                stream: db.posts,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(
+                      child: Text("An error has occurred!"),
                     );
-            }
-          },
+                  } else {
+                    var posts = snapshot.data ?? [];
+
+                    return posts.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: posts.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                  onTap: () => {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => PostPage(
+                                                    post: posts[index],
+                                                  )),
+                                        )
+                                      },
+                                  child: Card(
+                                      elevation: 5.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(posts[index].message),
+                                      )));
+                            })
+                        : const Center(
+                            child: Text("No post have been made yet."),
+                          );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: messagePopUp,

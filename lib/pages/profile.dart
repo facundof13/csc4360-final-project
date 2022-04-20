@@ -1,35 +1,17 @@
-import 'package:fanpage/pages/home.dart';
-import 'package:fanpage/shared.dart';
-import 'package:fanpage/custom/forms/signupform.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
-  static const String routeName = '/profile';
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key, required this.userId}) : super(key: key);
+  static const routeName = '/profile';
+  final String userId;
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    double width = (screenWidth(context) < screenHeight(context) ? 0.95 : 0.5) *
-        screenWidth(context);
-    return Scaffold(
-      body: Center(
-        child: SizedBox(
-          width: width,
-          child: Card(
-              elevation: 5.0,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SignUpForm(onTap: () => _successfulSignUp(context)),
-              )),
-        ),
-      ),
-    );
-  }
-
-  static void _successfulSignUp(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-      ModalRoute.withName('/'),
-    );
+    return const Scaffold();
   }
 }

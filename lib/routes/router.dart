@@ -17,8 +17,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignUpPage());
       case Routes.conversation:
         return MaterialPageRoute(builder: (_) => ConversationPage());
-      case Routes.profile:
-        return MaterialPageRoute(builder: (_) => ProfilePage());
       default:
         return MaterialPageRoute(builder: (_) => Driver());
     }
@@ -30,6 +28,6 @@ class Routes {
   static const String signup = SignUpPage.routeName;
   static const String driver = '/';
   static const String conversation = ConversationPage.routeName;
-  static const String post = PostPage.routeName;
   static const String profile = ProfilePage.routeName;
+  static const String post = PostPage.routeName;
 }

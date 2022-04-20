@@ -1,6 +1,7 @@
 import 'package:fanpage/models/conversation.dart';
 import 'package:fanpage/models/message.dart';
 import 'package:fanpage/pages/chat.dart';
+import 'package:fanpage/pages/profile.dart';
 import 'package:fanpage/pages/send_message.dart';
 import 'package:fanpage/services/database_service.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +42,12 @@ class _MessagePageState extends State<MessagePage> {
         centerTitle: true,
         actions: [
           PopupMenuButton(
+              onSelected: route,
               itemBuilder: (context) => [
-                    PopupMenuItem(value: 0, child: Text("hello")),
+                    const PopupMenuItem(
+                      value: 0,
+                      child: Text("View Profile"),
+                    ),
                   ])
         ],
       ),
@@ -65,6 +70,16 @@ class _MessagePageState extends State<MessagePage> {
           );
         },
       ),
+    );
+  }
+
+  void route(value) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ProfilePage(
+                userId: auth.currentUser!.uid,
+              )),
     );
   }
 }
