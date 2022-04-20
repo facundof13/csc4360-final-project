@@ -18,7 +18,7 @@ class _SendMessagePageState extends State<SendMessagePage> {
   Future<void> sendMessage() async {
     await db.sendMessage(messageController.value.text, widget.conversationId);
 
-    // clear message controller
+    messageController.text = '';
     widget.messageSent();
   }
 

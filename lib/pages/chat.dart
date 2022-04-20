@@ -18,16 +18,12 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
     SchedulerBinding.instance!.addPostFrameCallback((_) {
       widget.scrollController
           .jumpTo(widget.scrollController.position.maxScrollExtent);
     });
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       ListView.builder(
         controller: widget.scrollController,
