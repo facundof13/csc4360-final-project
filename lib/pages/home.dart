@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                                       elevation: 5.0,
                                       child: Padding(
                                         padding: const EdgeInsets.all(10.0),
-                                        child: Text(posts[index].message),
+                                        child: Text(posts[index].title),
                                       )));
                             })
                         : const Center(

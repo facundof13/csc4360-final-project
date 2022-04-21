@@ -3,30 +3,42 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Post {
   Post(
       {required this.id,
-      required this.message,
-      required this.type,
+      required this.post,
+      required this.title,
+      required this.tag,
+      required this.location,
       required this.owner,
+      required this.images,
       required this.created});
 
   factory Post.fromMap(String id, Map<String, dynamic> data) {
     return Post(
       id: id,
-      message: data['message'],
-      type: data['type'],
+      post: data['post'],
+      images: data['images'],
       owner: data['owner'],
       created: data['created'],
+      location: data['location'],
+      title: data['title'],
+      tag: data['tag'],
     );
   }
   Map<String, dynamic> toJson() => {
-        'message': message,
-        'type': type,
+        'location': location,
+        'tag': tag,
+        'images': images,
+        'message': post,
         'owner': owner,
         'created': created,
+        'title': title,
       };
 
   final String id;
-  final String message;
-  final int type;
+  final String post;
+  final List<dynamic> images;
   final String owner;
   final Timestamp created;
+  final String location;
+  final String tag;
+  final String title;
 }
