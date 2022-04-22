@@ -97,6 +97,7 @@ class DatabaseService {
   List<Post> _getPostsFromSnapshot(
       QuerySnapshot<Map<String, dynamic>> snapshot) {
     List<Post> posts = [];
+
     for (var element in snapshot.docs) {
       Post post = Post.fromMap(element.id, element.data());
       posts.add(post);

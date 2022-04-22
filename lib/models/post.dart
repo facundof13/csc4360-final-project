@@ -39,6 +39,6 @@ class Post {
   final String owner;
   final Timestamp created;
   final String location;
-  final String tag;
+  final List<dynamic> tag;
   final String title;
 }
