@@ -7,10 +7,13 @@ import 'package:fanpage/models/post.dart';
 import 'package:fanpage/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:collection/collection.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  firebase_storage.FirebaseStorage storage =
+      firebase_storage.FirebaseStorage.instance;
 
   static Map<String, User> userMap = <String, User>{};
 
@@ -173,5 +176,9 @@ class DatabaseService {
       'message': message,
       'from': _auth.currentUser!.uid,
     });
+  }
+
+  Future<void> createPosting(post) async {
+    print(post);
   }
 }

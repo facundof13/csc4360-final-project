@@ -1,6 +1,7 @@
 import 'package:fanpage/models/post.dart';
 import 'package:fanpage/pages/post.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PostCard extends StatefulWidget {
   const PostCard({Key? key, required this.post}) : super(key: key);
@@ -11,6 +12,8 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  final f = DateFormat('MMMM dd, yyy');
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -28,7 +31,7 @@ class _PostCardState extends State<PostCard> {
             child: Card(
               child: Column(children: [
                 Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: Text(
                       widget.post.title,
                       style: const TextStyle(
@@ -37,12 +40,25 @@ class _PostCardState extends State<PostCard> {
                       ),
                     )),
                 if (widget.post.images.isNotEmpty)
-                  Container(
-                      padding: const EdgeInsets.all(10),
+                  Expanded(
                       child: Image.network(
-                        widget.post.images[0],
-                        width: 100,
-                      ))
+                    widget.post.images[0],
+                  )),
+                if (widget.post.tag.isNotEmpty)
+                  SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: widget.post.tag
+                              .map((e) => Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Chip(label: Text(e)),
+                                  ))
+                              .toList())),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                        "Posted on " + f.format(DateTime.now()).toString())),
               ]),
             )));
   }

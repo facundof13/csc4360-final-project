@@ -6,7 +6,7 @@ import 'package:fanpage/pages/post_card.dart';
 import 'package:fanpage/pages/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import '../services/database_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -117,9 +117,10 @@ class _HomePageState extends State<HomePage> {
   void messagePopUp() {
     showModalBottomSheet<void>(
         context: context,
+        isDismissible: false,
         builder: (BuildContext context) {
-          return const Padding(
-              padding: EdgeInsets.all(30.0), child: PostForm());
+          return Padding(
+              padding: const EdgeInsets.all(30.0), child: PostForm());
         });
   }
 }
