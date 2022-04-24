@@ -119,8 +119,8 @@ class _HomePageState extends State<HomePage> {
         context: context,
         isDismissible: false,
         builder: (BuildContext context) {
-          return Padding(
-              padding: const EdgeInsets.all(30.0), child: PostForm());
+          return const Padding(
+              padding: EdgeInsets.all(30.0), child: PostForm());
         });
   }
 }

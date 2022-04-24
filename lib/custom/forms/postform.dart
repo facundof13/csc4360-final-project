@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:fanpage/services/database_service.dart';
 import 'package:fanpage/shared.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../widgets/loading.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostForm extends StatefulWidget {
   const PostForm({
@@ -20,6 +23,7 @@ class _PostFormState extends State<PostForm> {
   var description = TextEditingController();
   var location = TextEditingController();
 
+  final ImagePicker picker = ImagePicker();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final DatabaseService db = DatabaseService();
   final List<String> tagList = [
@@ -32,93 +36,172 @@ class _PostFormState extends State<PostForm> {
   ];
 
   List<String> selectedTags = [];
+  List<File>? pickedFiles = [];
 
   @override
   Widget build(BuildContext context) {
     tagList.sort();
     return loading
         ? const Loading()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                controller: title,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Title',
-                ),
-              ),
-              verticalSpaceSmall,
-              TextField(
-                controller: description,
-                minLines: 4,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Description',
-                ),
-              ),
-              verticalSpaceSmall,
-              TextField(
-                controller: location,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Location',
-                ),
-              ),
-              verticalSpaceSmall,
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: tagList
-                      .map(
-                        (tag) => GestureDetector(
-                            onTap: () => setState(() {
-                                  if (selectedTags.contains(tag)) {
-                                    selectedTags.remove(tag);
-                                  } else {
-                                    selectedTags.add(tag);
-                                  }
-                                }),
-                            child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 5, right: 5),
-                                child: Chip(
-                                  label: Text(tag),
-                                  backgroundColor: selectedTags.contains(tag)
-                                      ? Colors.blue.shade300
-                                      : Colors.grey.shade300,
-                                ))),
-                      )
-                      .toList(),
-                ),
-              ),
-              verticalSpaceLarge,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all(Colors.black),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.grey.shade300)),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel Post")),
-                  ElevatedButton(
-                      onPressed: createPost, child: const Text("Post Message")),
+        : ListView(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  TextField(
+                    controller: title,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Title',
+                    ),
+                  ),
+                  verticalSpaceSmall,
+                  TextField(
+                    controller: description,
+                    minLines: 4,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Description',
+                    ),
+                  ),
+                  verticalSpaceSmall,
+                  TextField(
+                    controller: location,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Location',
+                    ),
+                  ),
+                  verticalSpaceSmall,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: tagList
+                          .map(
+                            (tag) => GestureDetector(
+                                onTap: () => setState(() {
+                                      if (selectedTags.contains(tag)) {
+                                        selectedTags.remove(tag);
+                                      } else {
+                                        selectedTags.add(tag);
+                                      }
+                                    }),
+                                child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 5, right: 5),
+                                    child: Chip(
+                                      label: Text(tag),
+                                      backgroundColor:
+                                          selectedTags.contains(tag)
+                                              ? Colors.blue.shade300
+                                              : Colors.grey.shade300,
+                                    ))),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  verticalSpaceMedium,
+                  if (pickedFiles!.isNotEmpty)
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: getPreviews()),
+                    ),
+                  TextButton(
+                      onPressed: showPicker,
+                      child: const Text("Upload Images")),
+                  verticalSpaceLarge,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          style: ButtonStyle(
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.black),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Colors.grey.shade300)),
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text("Cancel Post")),
+                      ElevatedButton(
+                          onPressed: createPost,
+                          child: const Text("Post Message")),
+                    ],
+                  ),
+                  verticalSpaceRegular
                 ],
               ),
-              verticalSpaceRegular
             ],
           );
   }
 
+  getPreviews() {
+    return pickedFiles!
+        .map((img) => Container(
+            width: 100,
+            height: 100,
+            child: GestureDetector(
+              child: Image.network(img.path),
+              onTap: () => showPreview(img),
+            )))
+        .toList();
+  }
+
+  void showPreview(File img) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return Scaffold(
+          body: Center(
+              child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.network(img.path),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.grey.shade300)),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Back")),
+                horizontalSpaceSmall,
+                ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.red)),
+                    onPressed: () {
+                      setState(() {
+                        pickedFiles!.remove(img);
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Remove"))
+              ],
+            ),
+          )
+        ],
+      )));
+    }));
+  }
+
+  void showPicker() async {
+    var images = await picker.pickMultiImage();
+    setState(() {
+      pickedFiles = images?.map((xfile) {
+        return File(xfile.path);
+      }).toList();
+    });
+    print(pickedFiles);
+  }
+
   void createPost() async {
-    bool isValid = true;
     List<String> errors = [];
 
     if (title.value.text.isEmpty) {
@@ -153,7 +236,7 @@ class _PostFormState extends State<PostForm> {
         'title': title.value.text,
         'post': description.value.text,
         'selectedTags': selectedTags,
-        'images': [],
+        'images': pickedFiles ?? [],
         'created': DateTime.now(),
         'location': location.value.text,
       });
