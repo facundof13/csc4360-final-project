@@ -8,6 +8,7 @@ import 'package:fanpage/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:collection/collection.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'dart:io';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -136,12 +137,15 @@ class DatabaseService {
     return;
   }
 
-  Future<void> addPost(String uid, String message) async {
+  Future<void> addPost(String title, String message, List<String> selectedTags, List<File>? pickedFiles, String uid, String location,) async {
     await _firestore.collection("posts").add({
-      'message': message,
-      'type': 0,
-      'owner': uid,
-      "created": DateTime.now()
+        'title': title,
+        'post': message,
+        'selectedTags': selectedTags,
+        'images': pickedFiles ?? [],
+        'created': DateTime.now(),
+        'owner': uid,
+        'location': location,
     });
     return;
   }

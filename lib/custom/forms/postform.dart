@@ -232,14 +232,25 @@ class _PostFormState extends State<PostForm> {
           timeInSecForIosWeb: 3,
           webShowClose: true);
     } else {
-      await db.createPosting({
+      var post = {
         'title': title.value.text,
         'post': description.value.text,
         'selectedTags': selectedTags,
         'images': pickedFiles ?? [],
-        'created': DateTime.now(),
+        'owner': auth.currentUser?.uid,
         'location': location.value.text,
-      });
+      };
+
+      await db.createPosting(post);
+
+      await db.addPost(
+        post['title'] as String, 
+        post['post'] as String, 
+        post['selectedTags'] as List<String>, 
+        post['images'] as List<File>?, 
+        post['owner'] as String, 
+        post['location'] as String,
+      );
     }
   }
 }
