@@ -47,34 +47,36 @@ class _PostPageState extends State<PostPage> {
         ],
       ),
       body: SafeArea(
-          child: Container(
-        child: Column(children: [
-          verticalSpaceMedium,
-          CarouselSlider(
-            items: widget.post.images!.isNotEmpty
-                ? widget.post.images!.map((img) => Image.network(img)).toList()
-                : [const Text("Please contact the seller for images")],
-            options: CarouselOptions(),
-          ),
-          verticalSpaceMedium,
-          SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: widget.post.tag
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Chip(label: Text(e)),
-                          ))
-                      .toList())),
-          verticalSpaceMedium,
-          Center(
-            child: Text(widget.post.post),
-          ),
-          verticalSpaceMedium,
-          Center(child: Text("Located in ${widget.post.location}")),
-        ]),
-      )),
+          child: Expanded(
+            child: Container(
+                  child: Column(children: [
+            verticalSpaceMedium,
+            CarouselSlider(
+              items: widget.post.images!.isNotEmpty
+                  ? widget.post.images!.map((img) => Image.network(img)).toList()
+                  : [const Text("Please contact the seller for images")],
+              options: CarouselOptions(),
+            ),
+            verticalSpaceMedium,
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: widget.post.tag
+                        .map((e) => Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Chip(label: Text(e)),
+                            ))
+                        .toList())),
+            verticalSpaceMedium,
+            Center(
+              child: Text(widget.post.post),
+            ),
+            verticalSpaceMedium,
+            Center(child: Text("Located in ${widget.post.location}")),
+                  ]),
+                ),
+          )),
     );
   }
 
