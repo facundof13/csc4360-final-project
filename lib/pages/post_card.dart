@@ -39,11 +39,14 @@ class _PostCardState extends State<PostCard> {
                         fontWeight: FontWeight.bold,
                       ),
                     )),
-                if (widget.post.images.isNotEmpty)
+                if (widget.post.images != null &&
+                    widget.post.images!.isNotEmpty)
                   Expanded(
                       child: Image.network(
-                    widget.post.images[0],
-                  )),
+                    widget.post.images![0],
+                  ))
+                else
+                  const Spacer(),
                 if (widget.post.tag.isNotEmpty)
                   SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -57,8 +60,10 @@ class _PostCardState extends State<PostCard> {
                               .toList())),
                 Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: Text(
-                        "Posted on " + f.format(DateTime.now()).toString())),
+                    child: Text("Posted on " +
+                        f
+                            .format(DateTime.parse(widget.post.created))
+                            .toString())),
               ]),
             )));
   }

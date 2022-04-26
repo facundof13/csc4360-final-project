@@ -37,7 +37,7 @@ class _SendMessagePageState extends State<SendMessagePage> {
                 controller: messageController,
                 decoration: const InputDecoration(
                     hintText: "Write message...",
-                    hintStyle: TextStyle(color: Colors.black54),
+                    hintStyle: TextStyle(color: Colors.black),
                     border: InputBorder.none),
               ),
             ),

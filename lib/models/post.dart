@@ -35,7 +35,7 @@ class Post {
 
   final String id;
   final String post;
-  final List<dynamic> images;
+  final List<dynamic>? images;
   final String owner;
   final String created;
   final String location;

@@ -32,6 +32,7 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.conversation);
     String title = widget.conversation.userInfo
         .where((user) => user.id != auth.currentUser!.uid)
         .first

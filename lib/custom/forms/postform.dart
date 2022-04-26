@@ -198,7 +198,6 @@ class _PostFormState extends State<PostForm> {
         return File(xfile.path);
       }).toList();
     });
-    print(pickedFiles);
   }
 
   void createPost() async {
@@ -235,11 +234,14 @@ class _PostFormState extends State<PostForm> {
       await db.createPosting({
         'title': title.value.text,
         'post': description.value.text,
-        'selectedTags': selectedTags,
+        'tag': selectedTags,
         'images': pickedFiles ?? [],
-        'created': DateTime.now(),
+        'created': DateTime.now().toString(),
         'location': location.value.text,
+        'owner': auth.currentUser!.uid,
       });
+
+      Navigator.of(context).pop();
     }
   }
 }

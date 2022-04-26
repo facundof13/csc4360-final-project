@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fanpage/models/conversation.dart';
@@ -8,6 +9,7 @@ import 'package:fanpage/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:collection/collection.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cross_file/cross_file.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -146,7 +148,7 @@ class DatabaseService {
     return;
   }
 
-  Future<void> createConversation(User selectedUser, String message) async {
+  Future<String> createConversation(User selectedUser, String message) async {
     var users = [selectedUser.id, _auth.currentUser!.uid];
     users.sort();
 
@@ -167,6 +169,7 @@ class DatabaseService {
     }
 
     await sendMessage(message, conversationId);
+    return conversationId;
   }
 
   Future<void> sendMessage(String message, String conversationId) async {
@@ -178,7 +181,60 @@ class DatabaseService {
     });
   }
 
-  Future<void> createPosting(post) async {
-    print(post);
+  Future<void> createPosting(createdPost) async {
+    var imageURLs = [];
+
+    for (File f in createdPost['images']) {
+      var storageRef = firebase_storage.FirebaseStorage.instance
+          .ref('images/${Uri.parse(f.path).pathSegments.last}');
+      var taskSnapshot =
+          await storageRef.putData(await XFile(f.path).readAsBytes());
+
+      imageURLs.add(await taskSnapshot.ref.getDownloadURL());
+    }
+
+    createdPost.remove('images');
+    createdPost['images'] = imageURLs;
+
+    await _firestore.collection("posts").add(createdPost);
+  }
+
+  Future<void> deletePost(String id) async {
+    await _firestore.collection("posts").doc(id).delete();
+  }
+
+  Future<Conversation> getConversationById(String id) async {
+    var snapshot = await _firestore.collection("conversations").doc(id).get();
+
+    final c = Conversation.fromMap(snapshot.id, snapshot.data()!);
+
+    for (var uid in c.users) {
+      User u = await getUser(uid);
+
+      u.isSelf = uid == _auth.currentUser!.uid;
+
+      c.userInfo.add(u);
+    }
+
+    return c;
+  }
+
+  reportAbuse(reportedId, reportingId, comment) async {
+    await _firestore.collection("reports-abuse").add({
+      'reportedId': reportedId,
+      'reportingId': reportingId,
+      'comment': comment,
+    });
+  }
+
+  getUserPosts(String uid) async {
+    var count = await _firestore
+        .collection("posts")
+        .where('owner', isEqualTo: uid)
+        .get();
+
+    print(count);
+
+    return count;
   }
 }
