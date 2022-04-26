@@ -49,6 +49,8 @@ class _PostPageState extends State<PostPage> {
       body: SafeArea(
           child: Expanded(
             child: Container(
+              height: 800,
+              width: 800,
                   child: Column(children: [
             verticalSpaceMedium,
             CarouselSlider(
