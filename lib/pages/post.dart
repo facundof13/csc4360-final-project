@@ -3,6 +3,7 @@ import 'package:fanpage/pages/home.dart';
 import 'package:fanpage/shared.dart';
 import 'package:fanpage/custom/forms/signupform.dart';
 import 'package:flutter/material.dart';
+import 'package:fanpage/services/database_service.dart';
 
 class PostPage extends StatelessWidget {
   final Post post;
@@ -16,7 +17,11 @@ class PostPage extends StatelessWidget {
         title: Text(post.title),
         centerTitle: true,
       ),
-      body: Text(post.post),
+      body: Column(
+        children: [
+          Text(post.post),
+        ],
+      )
     );
   }
 

@@ -141,8 +141,10 @@ class _SignUpFormState extends State<SignUpForm> {
         context: context,
         builder: (BuildContext context) {
           return Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: LogInForm(onTap: widget.onTap));
-        });
+            padding: const EdgeInsets.all(30.0),
+            child: LogInForm(onTap: widget.onTap)
+          );
+        }
+      );
   }
 }
